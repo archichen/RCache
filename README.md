@@ -2,7 +2,7 @@
 
 Cache files recursively on HDFS.
 
-usage: `hadoop jar RCache.jar -d <Dir> -p <Pool> [-r <Replication=1>] [-v <Verbose>] [-h <Help>]`
+usage: `hadoop jar RCache.jar -d <Dir> -p <Pool> [-r <Replication=1>] [-v <Verbose>] [-c <Path>] [-show <show=false>] [-h <Help>]`
 
 | Parameter | Description |
 |---|---|
