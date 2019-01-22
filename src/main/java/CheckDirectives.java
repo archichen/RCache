@@ -30,7 +30,7 @@ class CheckDirectives {
     }
 
     void check() {
-        // 源文件和Cache directives使用TreeSet按Path排序
+        // 源文件和Cache directives使用TreeSet按Path排序。排序非常重要，下面的逻辑依赖于已顺序的集合。
         TreeSet<FileStatus> fsSet = new TreeSet<>();
         TreeSet<CacheInfo> directiveSet = new TreeSet<>();
 
