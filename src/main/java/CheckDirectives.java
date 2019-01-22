@@ -126,6 +126,7 @@ class CheckDirectives {
 
 }
 
+// CacheDirectiveEntry没有comapreTo方法，所以无法被TreeSet直接排序。使用CacheInfo包装CacheDirectiveEntry，实现Comparable接口，使TreeSet可以根据Path进行排序。
 class CacheInfo extends CacheDirectiveEntry implements Comparable {
     CacheInfo(CacheDirectiveInfo info, CacheDirectiveStats stats) {
         super(info, stats);
