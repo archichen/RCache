@@ -20,6 +20,7 @@ public class RCache {
     private static String poolName;
     private static int replication = 1;
     private static boolean isVerbose = false;
+    private static boolean showFlag = false;
 
     private RCache() throws IOException {
         PriorityQueue<FileStatus> uncachedPaths = new PriorityQueue<>();
@@ -69,11 +70,13 @@ public class RCache {
         CommandLineParser parser = new BasicParser();
         HelpFormatter formatter = new HelpFormatter();
 
-        options.addOption("d", "Directory", true, "Root path which would be cached.");
-        options.addOption("p", "Pool", true, "Cache pool name.");
-        options.addOption("r", "Replication", true, "Amount of cache replication.");
-        options.addOption("v", "Verbose", false, "Verbosely list files processed.");
+        options.addOption("d", "directory", true, "Root path which would be cached.");
+        options.addOption("p", "pool", true, "Cache pool name.");
+        options.addOption("r", "replication", true, "Amount of cache replication.");
+        options.addOption("v", "verbose", false, "Verbosely list files processed.");
         options.addOption("h", "help", false, "Get help.");
+        options.addOption("c", "check", true, "Check directives whether fully cached or not.");
+        options.addOption("show", "show", false, "This option will print all fully cached directives.");
 
         try {
             CommandLine cmd = parser.parse(options, args);
@@ -90,6 +93,10 @@ public class RCache {
                 fileSystem = FileSystem.get(URI.create(fPath), conf);
 
                 poolName = cmd.getOptionValue("p");
+            } else if (cmd.hasOption("c")){
+                showFlag = cmd.hasOption("show");
+                new CheckDirectives(new Path(cmd.getOptionValue("c")), poolName, conf, showFlag).check();
+                System.exit(0);
             } else {
                 throw new ParseException("Missing parameters.");
             }
@@ -110,7 +117,7 @@ public class RCache {
         } catch (ParseException pe) {
             System.out.println(pe.getMessage());
             System.out.println("Cache file recursively");
-            formatter.printHelp("RCache -d <Dir> -p <Pool> [-r <Replication=1>] [-v <Verbose>] [-h <Help>]", options);
+            formatter.printHelp("RCache -d <Dir> -p <Pool> [-r <Replication=1>] [-v <Verbose>] [-c <Dir>] [-show <Show=false>] [-h <Help>]", options);
         } catch (IOException e) {
             e.printStackTrace();
         }
