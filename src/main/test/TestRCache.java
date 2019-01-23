@@ -16,7 +16,7 @@ public class TestRCache {
 
     @Test
     public void testCheckDirectives() throws IOException {
-        new CheckDirectives(new Path("/test"), "benchmarks", conf, true).check();
+        new CheckDirectives(new Path("/RCacheTest"), "benchmarks", conf, true).check();
     }
 
     @Test

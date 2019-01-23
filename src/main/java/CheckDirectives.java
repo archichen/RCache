@@ -42,9 +42,10 @@ class CheckDirectives {
 
             if (!fsSet.isEmpty() && !directiveSet.isEmpty()) {
                 if (fsSet.size() != directiveSet.size()) {
-                    System.out.println("Cache directives not match hdfs files!");
-                } else {
-                    for (int i=0; i<fsSet.size() && fileStatusIterator.hasNext() && cacheInfoIterator.hasNext(); i++) {
+                    System.out.println("[WARN] Cache directives not match hdfs files!");
+                }
+
+                for (int i=0; i<(fsSet.size() >= directiveSet.size() ? directiveSet.size() : fsSet.size()) && fileStatusIterator.hasNext() && cacheInfoIterator.hasNext(); i++) {
                         FileStatus fileStatus = fileStatusIterator.next();
                         CacheInfo cacheInfo = cacheInfoIterator.next();
                         Path fileStatusPath = fileStatus.getPath();
@@ -53,23 +54,34 @@ class CheckDirectives {
                         if (fileStatusPath.equals(cacheInfoPath)) {
                             if (cacheInfo.getStats().getFilesCached() != cacheInfo.getStats().getFilesNeeded()) {
 //                                if (cacheInfo.getStats().getBytesCached() != 0)
-                                System.out.printf("Incomplete cache. Patch: %s, Cached: %3.2f%%\n",
+                                System.out.printf("[WARN] Incomplete cache. Patch: %s, Cached: %3.2f%%\n",
                                     fileStatusPath.toString(),
                                         Long.valueOf(cacheInfo.getStats().getBytesCached()).floatValue() /
                                                 Long.valueOf(cacheInfo.getStats().getBytesNeeded()).floatValue() * 100
                                 );
                             } else {
                                 if (showFlag) {
-                                    System.out.printf("Complete cache. Path: %s\n", fileStatusPath.toString());
+                                    System.out.printf("[INFO] Complete cache. Path: %s\n", fileStatusPath.toString());
                                 }
                             }
                         } else {
                             while (!fileStatusPath.equals(cacheInfoPath)) {
                                 fileStatusPath = fileStatusIterator.next().getPath();
-                                System.out.println("Path not found in directives: " + fileStatusPath);
+                                if (fsSet.size() >= directiveSet.size()) {
+                                    fileStatusPath = fileStatusIterator.next().getPath();
+                                    System.out.println("[WARN] Path not found in directives: " + fileStatusPath);
+                                } else {
+                                    cacheInfoPath = cacheInfoIterator.next().getInfo().getPath();
+                                    System.out.println("[WARN] Directive not found in files: " + cacheInfoPath);
+                                }
                             }
                         }
-                    }
+                }
+                while (fileStatusIterator.hasNext()) {
+                    System.out.println("[WARN] Path not found in directives: " + fileStatusIterator.next().getPath());
+                }
+                while (cacheInfoIterator.hasNext()) {
+                    System.out.println("[WARN] Directive not found in files: " + cacheInfoIterator.next().getInfo().getPath());
                 }
             }
 

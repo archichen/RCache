@@ -93,7 +93,7 @@ public class RCache {
                 fileSystem = FileSystem.get(URI.create(fPath), conf);
 
                 poolName = cmd.getOptionValue("p");
-            } else if (cmd.hasOption("c")){
+            } else if (cmd.hasOption("c") && cmd.hasOption("p")){
                 showFlag = cmd.hasOption("show");
                 new CheckDirectives(new Path(cmd.getOptionValue("c")), poolName, conf, showFlag).check();
                 System.exit(0);
